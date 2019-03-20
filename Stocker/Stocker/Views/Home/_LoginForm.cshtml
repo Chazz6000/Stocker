@@ -1,0 +1,10 @@
+﻿@model Stocker.Models.User
+
+<form asp-controller="Home" asp-action="Auth" method="post">
+
+   Email: @Html.TextBoxFor(u => u.Email)
+   Password: @Html.PasswordFor(u => u.Password)
+    
+    <button type="submit">Login</button>
+
+</form>

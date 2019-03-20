@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 namespace Stocker.Models
 {
 
-    public enum StockType
+    public enum eStockType
     {
-        Computer,
-        Laptop
+        eComputer,
+        eLaptop
     }
         
 
@@ -18,7 +18,7 @@ namespace Stocker.Models
     public class Stock
     {
         public int StockID { get; set; }
-        public StockType StockType { get; set; }
+        public eStockType StockType { get; set; }
         public  string Name { get; set; }
         public string LocationID { get; set; }
         public int Volume { get; set; }

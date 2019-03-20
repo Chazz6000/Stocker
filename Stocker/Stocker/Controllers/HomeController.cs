@@ -7,72 +7,62 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Stocker.Models;
+using Stocker.Repositories.Abstract;
 
 namespace Stocker.Controllers
 {
     public class HomeController : Controller
     {
+
+        private readonly IUserRepository _UserRepository;
+
+        public HomeController(IUserRepository userRepository)
+        {
+            _UserRepository = userRepository;
+        }
+
+
         public IActionResult Index()
         {
             User u = new User();
             u.Email = "admin@stocker.co.uk";
-            u.Password = "password1231";
+            u.Password = "password";
 
+           User test =  _UserRepository.Authenticate(u.Email, u.Password);
+           
+
+            if (test != null)
+            {
+                ViewBag.User = "Logged In";
+            }
+            else
+            {
+                ViewBag.User = "No User Found";
+            }
 
             //establish connection
-            using (SqlConnection connection = new SqlConnection("ha!"))
+
+           return View();
+        }
+
+       public IActionResult Auth(User u)
+        {
+
+          User user =  _UserRepository.Authenticate(u.Email, u.Password);
+
+            if (user != null)
             {
-                //create a command to send to the database
-                using (SqlCommand cmd = new SqlCommand("spAuthenticateUser", connection))
-                {
-                    //adapt the command to use a stored procedure with parameters.
-                    SqlDataAdapter adapter = new SqlDataAdapter(cmd);
-                    adapter.SelectCommand.CommandType = System.Data.CommandType.StoredProcedure;
-                    adapter.SelectCommand.Parameters.Add(new SqlParameter("@Email", System.Data.SqlDbType.VarChar));
-                    adapter.SelectCommand.Parameters["@Email"].Value = u.Email;
-                    adapter.SelectCommand.Parameters.Add(new SqlParameter("@Password", System.Data.SqlDbType.VarChar));
-                    adapter.SelectCommand.Parameters["@Password"].Value = u.Password;
-
-                    //bool correct = UserManager.Authenticate(Email,Password)
-                    //
-                    //If(correct) = Login else unable to login
-
-                    DataTable dataTable = new DataTable();
-                    adapter.Fill(dataTable);
-
-                    if (dataTable.Rows.Count > 0)
-                    {
-                        ViewBag.User = "Logged In";
-                    }
-                    else
-                    {
-                        ViewBag.User = "Unable to Login";
-                    }
-                }
+                return View("LoggedIn");
+            }
+            else
+            {
+                return View("Index");
             }
 
 
-            return View();
         }
 
-        public IActionResult About()
-        {
-            ViewData["Message"] = "Your application description page.";
 
-            return View();
-        }
-
-        public IActionResult Contact()
-        {
-            ViewData["Message"] = "Your contact page.";
-
-            return View();
-        }
-
-        public IActionResult Privacy()
-        {
-            return View();
-        }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
